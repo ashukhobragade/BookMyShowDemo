@@ -2,13 +2,15 @@
 //  AppDelegate.m
 //  BookMyShowDemo
 //
-//  Created by AshU on 9/2/15.
+//  Created by AshU on 9/3/15.
 //  Copyright (c) 2015 Ashish Khobragade. All rights reserved.
 //
 
 #import "AppDelegate.h"
+#import "AbstractRepository.h"
+#import "DatabaseMigrator.h"
+@interface AppDelegate ()<CLLocationManagerDelegate>
 
-@interface AppDelegate ()
 
 @end
 
@@ -16,7 +18,20 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+     self.globalManager = [[GlobalManager alloc] init];
+    
+    [self initializeDatabase];
+    
+   _locationManager = [[CLLocationManager alloc] init];
+    
+    _locationManager.delegate=self;
+    
+
+    [_locationManager requestWhenInUseAuthorization];
+    
+    
+    [_locationManager startUpdatingLocation];
+    
     return YES;
 }
 
@@ -42,4 +57,32 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray *)locations{
+   
+    if (locations.count>0) {
+        
+        self.mylocation=[locations objectAtIndex:0];
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+       didFailWithError:(NSError *)error{
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Location Error" message:@"Location not found. Please turn on location for this app in \nSetting->Privacay->Location."
+                                                   delegate:self cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK",nil];
+    
+    [alert show];
+}
+
+-(void) initializeDatabase
+{
+    DatabaseMigrator *migrator = [[DatabaseMigrator alloc] initWithDatabaseFile:[AbstractRepository databaseFilename]];
+    
+    [migrator moveDatabaseToUserDirectoryIfNeeded];
+    
+    [migrator migrateToVersion:1];
+    
+}
 @end

@@ -1,15 +1,14 @@
 //
-//  ViewController.h
+//  TypesTableViewController.h
 //  BookMyShowDemo
 //
-//  Created by AshU on 9/2/15.
+//  Created by AshU on 9/3/15.
 //  Copyright (c) 2015 Ashish Khobragade. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface TypesTableViewController : UITableViewController
 
 
 @end
-
